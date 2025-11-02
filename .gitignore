@@ -1,0 +1,27 @@
+# OS junk
+.DS_Store
+Thumbs.db
+
+# Node / front-end
+node_modules/
+npm-debug.log*
+yarn-error.log*
+
+# Composer
+/vendor/
+
+# Laravel env & caches
+.env
+.phpunit.result.cache
+/storage/*.key
+/storage/framework/cache/
+/storage/framework/sessions/
+/storage/framework/views/
+/storage/logs/
+
+# Public storage symlink
+/public/storage
+
+# Optional: DB dumps (keep them local)
+*.sql
+*.sql.gz
