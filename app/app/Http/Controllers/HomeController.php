@@ -7,33 +7,31 @@ use Illuminate\Support\Facades\DB;
 
 class HomeController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        // minimal data to the view
-        $data = [];
-        $data['title'] = 'Meal Planning';
-        return view('home', $data);
-    }
+        $userId = session('user_id');
 
-    public function health()
-    {
-        // raw SQL check
-        $ok = false;
-        $error = '';
-        try {
-            $rows = DB::select('SELECT 1 AS ok');
-            if (!empty($rows) && isset($rows[0]->ok) && $rows[0]->ok == 1) {
-                $ok = true;
-            }
-        } catch (\Throwable $e) {
-            $error = $e->getMessage();
+        // Guest view (slogan + login/register)
+        if (!$userId) {
+            return view('home', [
+                'mode' => 'guest',
+                'goals' => [],
+            ]);
         }
 
-        // plain text response to keep it simple
-        if ($ok === true) {
-            return response("DB OK\n", 200)->header('Content-Type', 'text/plain');
-        } else {
-            return response("DB ERROR: " . $error . "\n", 500)->header('Content-Type', 'text/plain');
-        }
+        // Authenticated dashboard (quick links + latest goals)
+        $goals = DB::select(
+            'SELECT id, name, direction, target_value 
+             FROM goals 
+             WHERE user_id = ? 
+             ORDER BY id DESC 
+             LIMIT 5',
+            [(int)$userId]
+        );
+
+        return view('home', [
+            'mode' => 'auth',
+            'goals' => $goals,
+        ]);
     }
 }
