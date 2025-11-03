@@ -15,25 +15,32 @@
         th, td { border:1px solid #ddd; padding:8px; text-align:left; }
         .actions form { display:inline; }
         .btn { padding:6px 10px; }
+        .logout-btn { background:none;border:none;padding:0;margin:0;color:#00f;cursor:pointer;text-decoration:underline; }
     </style>
 </head>
 <body>
     <div class="topbar">
-<div class="nav">
-    <a href="/">Home</a>
-    <a href="/goals">Goals</a>
-    <a href="/recipes">Recipes</a>
-    <a href="/nutrition-facts">Nutrition Facts</a>
-    <a href="/user-metrics">User Metrics</a>
-    <a href="/meal-plans">Meal Plans</a>
-</div>
+        <div class="nav">
+            <a href="{{ route('home') }}">Home</a>
+            <a href="{{ route('goals.index') }}">Goals</a>
+            <a href="/recipes">Recipes</a>
+            <a href="/user-metrics">User Metrics</a>
+            <a href="/meal-plans">Meal Plans</a>
+            @if(session('user_id'))
+                <a href="{{ route('foods.index') }}">Foods</a>
+            @endif
+        </div>
+
         <div>
             @if(session('user_id'))
                 <span>Signed in as <strong>{{ session('user_name') }}</strong></span>
-                <a href="/logout" class="btn">Logout</a>
+                <form action="{{ route('logout') }}" method="POST" style="display:inline;">
+                    @csrf
+                    <button type="submit" class="logout-btn">Logout</button>
+                </form>
             @else
-                <a href="/login" class="btn">Login</a>
-                <a href="/register" class="btn">Register</a>
+                <a href="{{ route('login.form') }}" class="btn">Login</a>
+                <a href="{{ route('register.form') }}" class="btn">Register</a>
             @endif
         </div>
     </div>
