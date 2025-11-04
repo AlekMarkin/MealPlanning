@@ -42,3 +42,4 @@ Route::post('/goals/store', [GoalController::class, 'store'])->name('goals.store
 Route::get('/goals/{id}/edit', [GoalController::class, 'edit'])->name('goals.edit');
 Route::post('/goals/{id}/update', [GoalController::class, 'update'])->name('goals.update');
 Route::post('/goals/{id}/delete', [GoalController::class, 'destroy'])->name('goals.destroy');
+

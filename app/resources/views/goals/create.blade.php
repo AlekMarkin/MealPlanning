@@ -1,26 +1,52 @@
 @extends('layouts.app')
 
 @section('content')
-    <h2>Create Goal</h2>
+<div style="max-width:620px;margin:0 auto;text-align:left;">
+    <h1 style="margin-bottom:12px;">New Goal</h1>
 
-    <form method="post" action="/goals/store">
+    @if(session('error'))
+        <div style="background:#ffecec;border:1px solid #f5aca6;padding:8px;margin-bottom:12px;">
+            {{ session('error') }}
+        </div>
+    @endif
+    @if($errors->any())
+        <div style="background:#ffecec;border:1px solid #f5aca6;padding:8px;margin-bottom:12px;">
+            <ul style="margin:0;padding-left:18px;">
+                @foreach($errors->all() as $e)<li>{{ $e }}</li>@endforeach
+            </ul>
+        </div>
+    @endif
+
+    <form method="post" action="{{ route('goals.store') }}">
         @csrf
 
-        <label>Name</label>
-        <input type="text" name="name" value="{{ old('name') }}" style="width:100%; padding:6px;">
-
-        <label style="display:block; margin-top:10px;">Direction</label>
-        <select name="direction" style="width:100%; padding:6px;">
-            <option value="up" {{ old('direction')==='up' ? 'selected' : '' }}>up</option>
-            <option value="down" {{ old('direction')==='down' ? 'selected' : '' }}>down</option>
+        <label>Metric</label><br>
+        <select name="metric" required>
+            <option value="">— select —</option>
+            @foreach($metrics as $key => $meta)
+                <option value="{{ $key }}" {{ old('metric')===$key?'selected':'' }}>
+                    {{ $meta['label'] }}
+                </option>
+            @endforeach
         </select>
+        <br><br>
 
-        <label style="display:block; margin-top:10px;">Target Value (number)</label>
-        <input type="number" name="target_value" value="{{ old('target_value') }}" style="width:100%; padding:6px;">
+        <label>Target value</label><br>
+        <input type="number" step="0.01" min="0" name="target_value" value="{{ old('target_value') }}" required />
+        <br><br>
 
-        <div style="margin-top:12px;">
-            <button type="submit" class="btn">Save</button>
-            <a href="/goals" class="btn">Cancel</a>
-        </div>
+        <label>Period</label><br>
+        <select name="period" required>
+            @foreach(['daily','weekly','monthly'] as $p)
+                <option value="{{ $p }}" {{ old('period','daily')===$p?'selected':'' }}>
+                    {{ ucfirst($p) }}
+                </option>
+            @endforeach
+        </select>
+        <br><br>
+
+        <button type="submit">Save Goal</button>
+        <a href="{{ route('goals.index') }}" style="margin-left:8px;">Cancel</a>
     </form>
+</div>
 @endsection
