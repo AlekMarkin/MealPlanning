@@ -7,42 +7,44 @@
     <style>
         body { font-family: Arial, sans-serif; margin:0; }
         .topbar { padding:10px 15px; background:#f0f0f0; display:flex; justify-content:space-between; align-items:center; }
-        .nav a { margin-right:10px; text-decoration:none; }
-        .container { max-width: 720px; margin: 30px auto; padding: 10px; text-align:center; }
+        .nav a { margin-right:12px; text-decoration:none; color:#222; }
+        .nav a:last-child { margin-right:0; }
+        .container { max-width: 960px; margin: 30px auto; padding: 10px; text-align:center; }
         form { text-align:left; margin: 0 auto; max-width: 520px; }
         .msg { margin: 10px auto; color: #333; }
         table { width:100%; border-collapse: collapse; margin-top: 15px; }
         th, td { border:1px solid #ddd; padding:8px; text-align:left; }
         .actions form { display:inline; }
         .btn { padding:6px 10px; }
-        .logout-btn { background:none;border:none;padding:0;margin:0;color:#00f;cursor:pointer;text-decoration:underline; }
     </style>
 </head>
 <body>
     <div class="topbar">
         <div class="nav">
-            <a href="{{ route('home') }}">Home</a>
-            <a href="{{ route('goals.index') }}">Goals</a>
-            <a href="/recipes">Recipes</a>
-            <a href="/user-metrics">User Metrics</a>
-            <a href="/meal-plans">Meal Plans</a>
-            @if(session('user_id'))
-                <a href="{{ route('foods.index') }}">Foods</a>
-            @endif
-<a href="{{ route('intakes.index', ['date' => date('Y-m-d')]) }}">Daily Intake</a>
+            {{-- Always visible --}}
+            <a href="{{ url('/') }}">Home</a>
+            <a href="{{ route('foods.index') }}">Foods</a>
+            <a href="{{ route('recipes.index') }}">Recipes</a>
 
+            {{-- Only for authenticated (we use our session-based auth) --}}
+            @if(session('user_id'))
+                <a href="{{ route('intakes.index') }}">Daily Intake</a>
+                <a href="{{ route('goals.index') }}">Goals</a>
+                <a href="{{ url('/user-metrics') }}">User Metrics</a>
+                <a href="{{ url('/meal-plans') }}">Meal Plans</a>
+            @endif
         </div>
 
         <div>
             @if(session('user_id'))
                 <span>Signed in as <strong>{{ session('user_name') }}</strong></span>
-                <form action="{{ route('logout') }}" method="POST" style="display:inline;">
+                <form method="post" action="{{ route('logout') }}" style="display:inline;">
                     @csrf
-                    <button type="submit" class="logout-btn">Logout</button>
+                    <button class="btn" type="submit">Logout</button>
                 </form>
             @else
-                <a href="{{ route('login.form') }}" class="btn">Login</a>
-                <a href="{{ route('register.form') }}" class="btn">Register</a>
+                <a href="{{ url('/login') }}" class="btn">Login</a>
+                <a href="{{ url('/register') }}" class="btn">Register</a>
             @endif
         </div>
     </div>
