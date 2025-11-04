@@ -29,6 +29,8 @@
             @if(session('user_id'))
                 <a href="{{ route('foods.index') }}">Foods</a>
             @endif
+<a href="{{ route('intakes.index', ['date' => date('Y-m-d')]) }}">Daily Intake</a>
+
         </div>
 
         <div>

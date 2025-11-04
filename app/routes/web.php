@@ -6,6 +6,7 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\GoalController;
 use App\Http\Controllers\FoodController;
 use App\Http\Controllers\RecipeController;
+use App\Http\Controllers\IntakeController;
 
 // Home (guest + auth see the same landing page)
 Route::get('/', [HomeController::class, 'index'])->name('home');
@@ -27,6 +28,12 @@ Route::resource('recipes', RecipeController::class)->except(['show']);
 Route::get('/recipes/{recipe}', [RecipeController::class, 'show'])->name('recipes.show');
 Route::post('/recipes/{recipe}/items', [RecipeController::class, 'addItem'])->name('recipes.items.store');
 Route::delete('/recipes/{recipe}/items/{item}', [RecipeController::class, 'removeItem'])->name('recipes.items.destroy');
+
+// Daily intakes
+Route::get('/intakes', [IntakeController::class, 'index'])->name('intakes.index');
+Route::post('/intakes/food', [IntakeController::class, 'storeFood'])->name('intakes.food.store');
+Route::post('/intakes/recipe', [IntakeController::class, 'storeRecipe'])->name('intakes.recipe.store');
+Route::delete('/intakes/{intake}', [IntakeController::class, 'destroy'])->name('intakes.destroy');
 
 // Goals 
 Route::get('/goals', [GoalController::class, 'index'])->name('goals.index');
