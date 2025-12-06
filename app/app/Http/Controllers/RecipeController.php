@@ -10,14 +10,19 @@ use App\Models\RecipeItem;
 
 class RecipeController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
         $userId = session('user_id'); // your current session-based auth
+        $q = $request->input('q', '');
+        
         $recipes = Recipe::where('user_id', $userId)
+            ->when($q, function($query) use ($q) {
+                return $query->where('name', 'like', '%'.$q.'%');
+            })
             ->orderBy('created_at', 'desc')
             ->get(['id','name','instructions','created_at']);
 
-        return view('recipes.index', compact('recipes'));
+        return view('recipes.index', compact('recipes', 'q'));
     }
 
     public function create()
@@ -50,7 +55,7 @@ public function show(\App\Models\Recipe $recipe)
         abort(403);
     }
 
-    // Foods for the “Add ingredient” dropdown (current user’s foods)
+    // Foods for the "Add ingredient" dropdown (current user's foods)
     $foods = \DB::table('foods')
         ->where('user_id', session('user_id'))
         ->orderBy('name')

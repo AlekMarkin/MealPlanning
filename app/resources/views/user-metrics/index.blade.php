@@ -62,6 +62,12 @@
         </div>
     </div>
 
+    <!-- Metrics Chart -->
+    <div style="background: white; padding: 20px; margin-bottom: 30px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+        <h2 style="margin-top: 0;">Metrics Chart</h2>
+        <canvas id="metricsChart" height="120"></canvas>
+    </div>
+
     <!-- Metrics History Table -->
     <div style="background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
         <h2 style="margin-top: 0;">Metrics History</h2>
@@ -87,11 +93,11 @@
                                 <td style="padding: 12px;">{{ date('M d, Y', strtotime($metric->recorded_date)) }}</td>
                                 <td style="padding: 12px;">{{ number_format($metric->weight_kg, 1) }}</td>
                                 <td style="padding: 12px;">{{ $metric->bp_systolic }}/{{ $metric->bp_diastolic }}</td>
-                                <td style="padding: 12px; text-align: center;">
-                                    <a href="{{ route('user-metrics.edit', $metric->id) }}" style="color: #007bff; text-decoration: none; margin-right: 10px;">Edit</a>
+                                <td style="padding: 12px; text-align: center; white-space: nowrap;">
+                                    <a href="{{ route('user-metrics.edit', $metric->id) }}" style="display: inline-block; background-color: #007bff; color: white; padding: 8px 12px; text-decoration: none; border-radius: 4px; font-size: 14px; margin-right: 8px;">Edit</a>
                                     <form action="{{ route('user-metrics.destroy', $metric->id) }}" method="POST" style="display: inline;" onsubmit="return confirm('Are you sure you want to delete this metric?');">
                                         @csrf
-                                        <button type="submit" style="background: none; border: none; color: #dc3545; cursor: pointer; text-decoration: underline;">Delete</button>
+                                        <button type="submit" style="background-color: #dc3545; color: white; padding: 8px 12px; border: none; border-radius: 4px; cursor: pointer; font-size: 14px;">Delete</button>
                                     </form>
                                 </td>
                             </tr>
@@ -102,4 +108,75 @@
         @endif
     </div>
 </div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+
+    const labels = {!! json_encode($metrics->pluck('recorded_date')->map(fn($d) => date('M d Y', strtotime($d)))) !!};
+    const weights = {!! json_encode($metrics->pluck('weight_kg')) !!};
+    const systolic = {!! json_encode($metrics->pluck('bp_systolic')) !!};
+    const diastolic = {!! json_encode($metrics->pluck('bp_diastolic')) !!};
+
+    const ctx = document.getElementById('metricsChart').getContext('2d');
+
+    new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: labels,
+            datasets: [
+                {
+                    label: 'Weight (kg)',
+                    data: weights,
+                    borderColor: '#007bff',
+                    backgroundColor: 'rgba(0, 123, 255, 0.2)',
+                    borderWidth: 2,
+                    tension: 0.3,
+                    yAxisID: 'y'
+                },
+                {
+                    label: 'Systolic (BP)',
+                    data: systolic,
+                    borderColor: '#dc3545',
+                    backgroundColor: 'rgba(220, 53, 69, 0.2)',
+                    borderWidth: 2,
+                    tension: 0.3,
+                    yAxisID: 'y1'
+                },
+                {
+                    label: 'Diastolic (BP)',
+                    data: diastolic,
+                    borderColor: '#6f42c1',
+                    backgroundColor: 'rgba(111, 66, 193, 0.2)',
+                    borderWidth: 2,
+                    tension: 0.3,
+                    yAxisID: 'y1'
+                }
+            ]
+        },
+        options: {
+            responsive: true,
+            interaction: {
+                intersect: false,
+                mode: 'index'
+            },
+            scales: {
+                y: {
+                    type: 'linear',
+                    position: 'left',
+                    title: { display: true, text: 'Weight (kg)' }
+                },
+                y1: {
+                    type: 'linear',
+                    position: 'right',
+                    title: { display: true, text: 'Blood Pressure' },
+                    grid: { drawOnChartArea: false }
+                }
+            }
+        }
+    });
+});
+</script>
+
 @endsection

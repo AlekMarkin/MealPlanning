@@ -1,36 +1,45 @@
 @extends('layouts.app')
 
 @section('content')
-<h1>Create Recipe</h1>
-
-@if ($errors->any())
-    <div style="background:#ffecec;border:1px solid #f5aca6;padding:8px;margin-bottom:10px;">
-        <ul style="margin:0;padding-left:18px;">
-            @foreach ($errors->all() as $e)
-                <li>{{ $e }}</li>
-            @endforeach
-        </ul>
-    </div>
-@endif
-
-<p style="margin-bottom:10px;color:#555;">
-    <em>Hint:</em> You will be able to add ingredients on the next step.
-</p>
-
-<form method="post" action="{{ route('recipes.store') }}" style="text-align:left;max-width:600px;margin:0 auto;">
-    @csrf
-
-    <div style="margin-bottom:8px;">
-        <label>Name</label><br>
-        <input type="text" name="name" value="{{ old('name') }}" required>
+<div style="max-width: 1200px; margin: 0 auto; padding: 20px;">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px;">
+        <h1 style="margin: 0;">Create Recipe</h1>
+        <a href="{{ route('recipes.index') }}" style="background-color: #6c757d; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px;">Back to Recipes</a>
     </div>
 
-    <div style="margin-bottom:8px;">
-        <label>Instructions</label><br>
-        <textarea name="instructions" rows="8" placeholder="How to make it…">{{ old('instructions') }}</textarea>
-    </div>
+    @if ($errors->any())
+        <div style="background-color: #f8d7da; color: #721c24; padding: 15px; margin-bottom: 20px; border: 1px solid #f5c6cb; border-radius: 5px;">
+            <ul style="margin: 0; padding-left: 18px;">
+                @foreach ($errors->all() as $e)
+                    <li>{{ $e }}</li>
+                @endforeach
+            </ul>
+        </div>
+    @endif
 
-    <button type="submit">Create</button>
-    <a href="{{ route('recipes.index') }}" style="margin-left:10px;">Cancel</a>
-</form>
+    <div style="background: white; padding: 30px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+        <p style="margin-bottom: 20px; color: #666; font-style: italic;">
+            <strong>Hint:</strong> You will be able to add ingredients on the next step.
+        </p>
+
+        <form method="post" action="{{ route('recipes.store') }}">
+            @csrf
+
+            <div style="margin-bottom: 25px;">
+                <label style="display: block; margin-bottom: 8px; font-weight: bold; color: #333;">Recipe Name</label>
+                <input type="text" name="name" value="{{ old('name') }}" required style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 4px; font-size: 14px; box-sizing: border-box;" />
+            </div>
+
+            <div style="margin-bottom: 30px;">
+                <label style="display: block; margin-bottom: 8px; font-weight: bold; color: #333;">Instructions</label>
+                <textarea name="instructions" rows="10" placeholder="How to make it…" style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 4px; font-size: 14px; box-sizing: border-box; font-family: Arial, sans-serif;">{{ old('instructions') }}</textarea>
+            </div>
+
+            <div style="display: flex; gap: 10px;">
+                <button type="submit" style="flex: 1; background-color: #4CAF50; color: white; padding: 12px; border: none; border-radius: 5px; font-size: 16px; cursor: pointer; font-weight: bold;">Create Recipe</button>
+                <a href="{{ route('recipes.index') }}" style="flex: 1; text-align: center; background-color: #6c757d; color: white; padding: 12px; text-decoration: none; border-radius: 5px; font-size: 16px; font-weight: bold;">Cancel</a>
+            </div>
+        </form>
+    </div>
+</div>
 @endsection

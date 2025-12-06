@@ -1,56 +1,71 @@
 @extends('layouts.app')
 
 @section('content')
-<div style="max-width: 980px; margin: 0 auto;">
-    <h1 style="margin-bottom: 12px;">Recipes</h1>
+<div style="max-width: 1200px; margin: 0 auto; padding: 20px;">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px;">
+        <h1 style="margin: 0;">Recipes</h1>
+        <a href="{{ route('recipes.create') }}" style="background-color: #4CAF50; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px;">+ New Recipe</a>
+    </div>
 
     @if(session('ok'))
-        <div style="background:#e6ffed; padding:10px; border:1px solid #b7eb8f; margin-bottom:12px;">
+        <div style="background-color: #d4edda; color: #155724; padding: 15px; margin-bottom: 20px; border: 1px solid #c3e6cb; border-radius: 5px;">
             {{ session('ok') }}
         </div>
     @endif
 
-    <div style="display:flex; gap:8px; align-items:center; margin-bottom:12px;">
-        <form method="get" action="{{ route('recipes.index') }}" style="display:flex; gap:8px;">
-            <input type="text" name="q" value="{{ old('q', $q ?? request('q')) }}" placeholder="Search name..." />
-            <button type="submit">Search</button>
+    <!-- Search Section -->
+    <div style="background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); margin-bottom: 30px;">
+        <form method="get" action="{{ route('recipes.index') }}" style="display: flex; gap: 10px; align-items: center;">
+            <input type="text" name="q" value="{{ old('q', $q ?? request('q')) }}" placeholder="Search recipe name..." style="flex: 1; padding: 10px; border: 1px solid #ddd; border-radius: 4px; font-size: 14px;" />
+            <button type="submit" style="background-color: #007bff; color: white; padding: 10px 20px; border: none; border-radius: 4px; cursor: pointer; font-size: 14px;">Search</button>
         </form>
-        <a href="{{ route('recipes.create') }}" style="margin-left:auto;">+ New Recipe</a>
     </div>
 
-    <table border="1" cellpadding="6" cellspacing="0" width="100%">
-        <thead>
-        <tr>
-            <th>Name</th>
-            <th>Instructions</th>
-            <th>Created</th>
-            <th></th>
-        </tr>
-        </thead>
-        <tbody>
-        @forelse($recipes as $r)
-            <tr>
-                <td><a href="{{ route('recipes.show', $r) }}">{{ $r->name }}</a></td>
-                <td>{{ Str::limit($r->instructions, 50) ?? '–' }}</td>
-                <td>{{ $r->created_at ? $r->created_at->format('Y-m-d') : '–' }}</td>
-                <td style="white-space:nowrap;">
-                    <a href="{{ route('recipes.edit', $r) }}">Edit</a>
-                    <form method="post" action="{{ route('recipes.destroy', $r) }}" style="display:inline;">
-                        @csrf
-                        @method('DELETE')
-                        <button type="submit" onclick="return confirm('Delete this recipe?')">Del</button>
-                    </form>
-                </td>
-            </tr>
-        @empty
-            <tr><td colspan="4">No recipes yet.</td></tr>
-        @endforelse
-        </tbody>
-    </table>
+    <!-- Recipes Table -->
+    <div style="background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+        <h2 style="margin-top: 0; margin-bottom: 20px;">All Recipes</h2>
 
-    <div style="margin-top:10px;">
-        @if(method_exists($recipes, 'links') && $recipes->hasPages())
-            {{ $recipes->appends(request()->query())->render('pagination') }}
+        @if($recipes->isEmpty())
+            <p style="text-align: center; color: #999; padding: 40px 0;">
+                No recipes found. <a href="{{ route('recipes.create') }}">Create your first recipe</a>
+            </p>
+        @else
+            <div style="overflow-x: auto;">
+                <table style="width: 100%; border-collapse: collapse;">
+                    <thead>
+                        <tr style="background-color: #f8f9fa; border-bottom: 2px solid #dee2e6;">
+                            <th style="padding: 12px; text-align: left;">Name</th>
+                            <th style="padding: 12px; text-align: left;">Instructions</th>
+                            <th style="padding: 12px; text-align: left;">Created</th>
+                            <th style="padding: 12px; text-align: center;">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach($recipes as $r)
+                            <tr style="border-bottom: 1px solid #dee2e6;">
+                                <td style="padding: 12px;"><a href="{{ route('recipes.show', $r) }}" style="color: #007bff; text-decoration: none;">{{ $r->name }}</a></td>
+                                <td style="padding: 12px;">{{ Str::limit($r->instructions, 60) ?? '–' }}</td>
+                                <td style="padding: 12px;">{{ $r->created_at ? $r->created_at->format('Y-m-d') : '–' }}</td>
+                                <td style="padding: 12px; text-align: center; white-space: nowrap;">
+                                    <a href="{{ route('recipes.edit', $r) }}" style="display: inline-block; background-color: #007bff; color: white; padding: 8px 12px; text-decoration: none; border-radius: 4px; font-size: 14px; margin-right: 8px;">Edit</a>
+                                    <form method="post" action="{{ route('recipes.destroy', $r) }}" style="display: inline;" onsubmit="return confirm('Delete this recipe?');">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button type="submit" style="background-color: #dc3545; color: white; padding: 8px 12px; border: none; border-radius: 4px; cursor: pointer; font-size: 14px;">Delete</button>
+                                    </form>
+                                </td>
+                            </tr>
+                        @endforeach
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Pagination -->
+            @if(method_exists($recipes, 'links') && $recipes->hasPages())
+                <div style="margin-top: 20px; display: flex; justify-content: center;">
+                    {{ $recipes->appends(request()->query())->render('pagination') }}
+                </div>
+            @endif
         @endif
     </div>
 </div>

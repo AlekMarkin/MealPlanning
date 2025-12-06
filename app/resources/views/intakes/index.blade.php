@@ -1,70 +1,70 @@
 @extends('layouts.app')
 
 @section('content')
-<div style="max-width: 960px; margin: 0 auto; text-align:left;">
-    <h1 style="margin-bottom:10px;">Daily Intake</h1>
+<div style="max-width: 960px; margin: 0 auto; padding: 20px; text-align: left;">
+    <h1 style="margin-bottom: 20px; text-align: left;">Daily Intake</h1>
 
     @if(session('ok'))
-        <div style="background:#e6ffed;border:1px solid #b7eb8f;padding:8px;margin-bottom:12px;">
+        <div style="background-color: #d4edda; color: #155724; padding: 15px; margin-bottom: 20px; border: 1px solid #c3e6cb; border-radius: 5px;">
             {{ session('ok') }}
         </div>
     @endif
     @if(session('error'))
-        <div style="background:#ffecec;border:1px solid #f5aca6;padding:8px;margin-bottom:12px;">
+        <div style="background-color: #f8d7da; color: #721c24; padding: 15px; margin-bottom: 20px; border: 1px solid #f5c6cb; border-radius: 5px;">
             {{ session('error') }}
         </div>
     @endif
     @if($errors->any())
-        <div style="background:#ffecec;border:1px solid #f5aca6;padding:8px;margin-bottom:12px;">
-            <ul style="margin:0;padding-left:18px;">
+        <div style="background-color: #f8d7da; color: #721c24; padding: 15px; margin-bottom: 20px; border: 1px solid #f5c6cb; border-radius: 5px;">
+            <ul style="margin: 0; padding-left: 18px;">
                 @foreach($errors->all() as $e)<li>{{ $e }}</li>@endforeach
             </ul>
         </div>
     @endif
 
     {{-- Date picker --}}
-    <form method="get" action="{{ route('intakes.index') }}" style="display:flex;gap:8px;align-items:center;margin-bottom:14px;">
-        <label for="date"><strong>Date:</strong></label>
-        <input id="date" type="date" name="date" value="{{ $date }}" />
-        <button type="submit">Go</button>
-        <button type="button" onclick="window.location='{{ route('intakes.index') }}'" style="margin-left:auto;">Today</button>
+    <form method="get" action="{{ route('intakes.index') }}" style="display:flex;gap:10px;align-items:center;margin-bottom:20px;justify-content:flex-start;">
+        <label for="date" style="white-space: nowrap;"><strong>Date:</strong></label>
+        <input id="date" type="date" name="date" value="{{ $date }}" style="padding: 8px; border: 1px solid #ddd; border-radius: 4px;" />
+        <button type="submit" style="background-color: #007bff; color: white; padding: 8px 15px; border: none; border-radius: 4px; cursor: pointer; font-size: 14px;">Go</button>
+        <button type="button" onclick="window.location='{{ route('intakes.index') }}'" style="background-color: #6c757d; color: white; padding: 8px 15px; border: none; border-radius: 4px; cursor: pointer; font-size: 14px;">Today</button>
     </form>
 
     {{-- Add Food --}}
-    <fieldset style="border:1px solid #ddd;padding:10px;margin-bottom:12px;">
-        <legend><strong>Add Food</strong></legend>
-        <form method="post" action="{{ route('intakes.food.store') }}" style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
+    <fieldset style="border: none; background: white; padding: 20px; margin-bottom: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+        <legend style="font-weight: bold; margin-bottom: 15px; padding: 0; text-align: left;">Add Food</legend>
+        <form method="post" action="{{ route('intakes.food.store') }}" style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;justify-content:flex-start;">
             @csrf
             <input type="hidden" name="date" value="{{ $date }}">
-            <select name="food_id" required style="flex:1;min-width:150px;">
+            <select name="food_id" required style="flex:1;min-width:150px; padding: 8px; border: 1px solid #ddd; border-radius: 4px; font-size: 14px;">
                 <option value="">– choose food –</option>
                 @foreach($foods as $f)
                     <option value="{{ $f->id }}">{{ $f->name }}</option>
                 @endforeach
             </select>
-            <input type="number" name="grams" min="0" step="1" value="100" placeholder="grams (g)" style="width:80px;" />
-            <input type="time" name="time" placeholder="Time" style="width:100px;" id="foodTime" />
-            <button type="submit">Add</button>
-            <button type="button" onclick="window.location='{{ route('foods.create') }}'" style="margin-left:auto;">+ New Food</button>
+            <input type="number" name="grams" min="0" step="1" value="100" placeholder="grams (g)" style="width:100px; padding: 8px; border: 1px solid #ddd; border-radius: 4px; font-size: 14px;" />
+            <input type="time" name="time" placeholder="Time" style="width:120px; padding: 8px; border: 1px solid #ddd; border-radius: 4px; font-size: 14px;" id="foodTime" />
+            <button type="submit" style="background-color: #4CAF50; color: white; padding: 8px 15px; border: none; border-radius: 4px; cursor: pointer; font-size: 14px;">Add</button>
+            <a href="{{ route('foods.create') }}" style="background-color: #28a745; color: white; padding: 8px 15px; border: none; border-radius: 4px; cursor: pointer; font-size: 14px; text-decoration: none;">+ New Food</a>
         </form>
     </fieldset>
 
     {{-- Add Recipe --}}
-    <fieldset style="border:1px solid #ddd;padding:10px;margin-bottom:12px;">
-        <legend><strong>Add Recipe</strong></legend>
-        <form method="post" action="{{ route('intakes.recipe.store') }}" style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
+    <fieldset style="border: none; background: white; padding: 20px; margin-bottom: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+        <legend style="font-weight: bold; margin-bottom: 15px; padding: 0; text-align: left;">Add Recipe</legend>
+        <form method="post" action="{{ route('intakes.recipe.store') }}" style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;justify-content:flex-start;">
             @csrf
             <input type="hidden" name="date" value="{{ $date }}">
-            <select name="recipe_id" required style="flex:1;min-width:150px;">
+            <select name="recipe_id" required style="flex:1;min-width:150px; padding: 8px; border: 1px solid #ddd; border-radius: 4px; font-size: 14px;">
                 <option value="">– choose recipe –</option>
                 @foreach($recipes as $r)
                     <option value="{{ $r->id }}">{{ $r->name }}</option>
                 @endforeach
             </select>
-            <input type="number" name="servings" min="0" step="0.25" value="1" placeholder="servings" style="width:80px;" />
-            <input type="time" name="time" placeholder="Time" style="width:100px;" id="recipeTime" />
-            <button type="submit">Add</button>
-            <button type="button" onclick="window.location='{{ route('recipes.create') }}'" style="margin-left:auto;">+ New Recipe</button>
+            <input type="number" name="servings" min="0" step="0.25" value="1" placeholder="servings" style="width:100px; padding: 8px; border: 1px solid #ddd; border-radius: 4px; font-size: 14px;" />
+            <input type="time" name="time" placeholder="Time" style="width:120px; padding: 8px; border: 1px solid #ddd; border-radius: 4px; font-size: 14px;" id="recipeTime" />
+            <button type="submit" style="background-color: #4CAF50; color: white; padding: 8px 15px; border: none; border-radius: 4px; cursor: pointer; font-size: 14px;">Add</button>
+            <a href="{{ route('recipes.create') }}" style="background-color: #28a745; color: white; padding: 8px 15px; border: none; border-radius: 4px; cursor: pointer; font-size: 14px; text-decoration: none;">+ New Recipe</a>
         </form>
     </fieldset>
 
@@ -72,7 +72,7 @@
     <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px;">
         
         {{-- Nutrients --}}
-        <div style="background: white; border: 1px solid #ddd; padding: 20px; border-radius: 4px;">
+        <div style="background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
             <h3 style="margin-top:0; margin-bottom:15px;">Nutrients</h3>
             <div style="position: relative; height: 300px;">
                 <canvas id="goalsChart"></canvas>
@@ -80,7 +80,7 @@
         </div>
 
         {{-- Carbon Footprint --}}
-        <div style="background: white; border: 1px solid #ddd; padding: 20px; border-radius: 4px;">
+        <div style="background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
             <h3 style="margin-top:0; margin-bottom:15px;">Carbon Footprint</h3>
             <div style="position: relative; height: 300px;">
                 <canvas id="carbonChart"></canvas>
@@ -90,88 +90,96 @@
     </div>
 
     {{-- Goal Progress Indicators --}}
-    <div style="background: #f9f9f9; border: 1px solid #ddd; padding: 20px; margin-bottom: 20px; border-radius: 4px;">
+    <div style="background: white; padding: 20px; margin-bottom: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
         <h3 style="margin-top:0; margin-bottom:15px;">Daily Goal Progress</h3>
         <div id="goalIndicators" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px;">
         </div>
     </div>
 
     {{-- Intakes table --}}
-    <h3 style="margin:12px 0 6px;">Entries for {{ $date }}</h3>
-    <table border="1" cellpadding="6" cellspacing="0" width="100%">
-        <thead>
-        <tr>
-            <th>Type</th>
-            <th>Name</th>
-            <th>Qty</th>
-            <th>When</th>
-            <th></th>
-        </tr>
-        </thead>
-        <tbody>
-        @forelse($intakes as $in)
-            <tr>
-                <td>{{ $in->food_id ? 'Food' : 'Recipe' }}</td>
-                <td>
-                    @if($in->food_id)
-                        {{ optional(\App\Models\Food::find($in->food_id))->name ?? '–' }}
-                    @elseif($in->recipe_id)
-                        {{ optional(\App\Models\Recipe::find($in->recipe_id))->name ?? '–' }}
-                    @else
-                        –
-                    @endif
-                </td>
-                <td>
-                    @if($in->food_id)
-                        {{ (int)$in->quantity_g }} g
-                    @elseif($in->recipe_id)
-                        {{ (float)$in->servings }} serving(s)
-                    @endif
-                </td>
-                <td>
-                    {{ $in->consumed_at ? \Illuminate\Support\Carbon::parse($in->consumed_at)->format('H:i') : '–' }}
-                </td>
-                <td>
-                    <form method="post" action="{{ route('intakes.destroy', $in) }}" onsubmit="return confirm('Remove this entry?')" style="display:inline;">
-                        @csrf @method('DELETE')
-                        <button type="submit">Del</button>
-                    </form>
-                </td>
-            </tr>
-        @empty
-            <tr><td colspan="5">No entries yet.</td></tr>
-        @endforelse
-        </tbody>
-    </table>
+    <div style="background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); margin-bottom: 20px;">
+        <h3 style="margin-top: 0; margin-bottom: 15px;">Entries for {{ $date }}</h3>
+        <div style="overflow-x: auto;">
+            <table style="width: 100%; border-collapse: collapse;">
+                <thead>
+                    <tr style="background-color: #f8f9fa; border-bottom: 2px solid #dee2e6;">
+                        <th style="padding: 12px; text-align: left;">Type</th>
+                        <th style="padding: 12px; text-align: left;">Name</th>
+                        <th style="padding: 12px; text-align: left;">Qty</th>
+                        <th style="padding: 12px; text-align: left;">When</th>
+                        <th style="padding: 12px; text-align: center;">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @forelse($intakes as $in)
+                        <tr style="border-bottom: 1px solid #dee2e6;">
+                            <td style="padding: 12px;">{{ $in->food_id ? 'Food' : 'Recipe' }}</td>
+                            <td style="padding: 12px;">
+                                @if($in->food_id)
+                                    {{ optional(\App\Models\Food::find($in->food_id))->name ?? '–' }}
+                                @elseif($in->recipe_id)
+                                    {{ optional(\App\Models\Recipe::find($in->recipe_id))->name ?? '–' }}
+                                @else
+                                    –
+                                @endif
+                            </td>
+                            <td style="padding: 12px;">
+                                @if($in->food_id)
+                                    {{ (int)$in->quantity_g }} g
+                                @elseif($in->recipe_id)
+                                    {{ (float)$in->servings }} serving(s)
+                                @endif
+                            </td>
+                            <td style="padding: 12px;">
+                                {{ $in->consumed_at ? \Illuminate\Support\Carbon::parse($in->consumed_at)->format('H:i') : '–' }}
+                            </td>
+                            <td style="padding: 12px; text-align: center;">
+                                <form method="post" action="{{ route('intakes.destroy', $in) }}" style="display:inline;" onsubmit="return confirm('Remove this entry?');">
+                                    @csrf @method('DELETE')
+                                    <button type="submit" style="background-color: #dc3545; color: white; padding: 6px 12px; border: none; border-radius: 4px; cursor: pointer; font-size: 13px;">Delete</button>
+                                </form>
+                            </td>
+                        </tr>
+                    @empty
+                        <tr><td colspan="5" style="padding: 12px; text-align: center; color: #999;">No entries yet.</td></tr>
+                    @endforelse
+                </tbody>
+            </table>
+        </div>
+    </div>
 
     {{-- Totals --}}
-    <h3 style="margin:14px 0 6px;">Totals</h3>
-    <table border="1" cellpadding="6" cellspacing="0" width="100%">
-        <thead>
-        <tr>
-            <th>kcal</th>
-            <th>Protein</th>
-            <th>Carbs</th>
-            <th>Fat</th>
-            <th>Fiber</th>
-            <th>Sugar</th>
-            <th>Sodium (mg)</th>
-            <th>Carbon (gCO2e)</th>
-        </tr>
-        </thead>
-        <tbody>
-            <tr>
-                <td>{{ round($totals['calories'], 2) }}</td>
-                <td>{{ round($totals['protein'], 2) }}</td>
-                <td>{{ round($totals['carbs'], 2) }}</td>
-                <td>{{ round($totals['fat'], 2) }}</td>
-                <td>{{ round($totals['fiber'], 2) }}</td>
-                <td>{{ round($totals['sugar'], 2) }}</td>
-                <td>{{ round($totals['sodium_mg'], 2) }}</td>
-                <td>{{ round($totals['carbon_footprint_gco2e'], 2) }}</td>
-            </tr>
-        </tbody>
-    </table>
+    <div style="background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+        <h3 style="margin-top: 0; margin-bottom: 15px;">Totals</h3>
+        <div style="overflow-x: auto;">
+            <table style="width: 100%; border-collapse: collapse;">
+                <thead>
+                    <tr style="background-color: #f8f9fa; border-bottom: 2px solid #dee2e6;">
+                        <th style="padding: 12px; text-align: left;">kcal</th>
+                        <th style="padding: 12px; text-align: left;">Protein</th>
+                        <th style="padding: 12px; text-align: left;">Carbs</th>
+                        <th style="padding: 12px; text-align: left;">Fat</th>
+                        <th style="padding: 12px; text-align: left;">Fiber</th>
+                        <th style="padding: 12px; text-align: left;">Sugar</th>
+                        <th style="padding: 12px; text-align: left;">Sodium (mg)</th>
+                        <th style="padding: 12px; text-align: left;">Carbon (gCO2e)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr style="border-bottom: 1px solid #dee2e6;">
+                        <td style="padding: 12px;">{{ round($totals['calories'], 2) }}</td>
+                        <td style="padding: 12px;">{{ round($totals['protein'], 2) }}</td>
+                        <td style="padding: 12px;">{{ round($totals['carbs'], 2) }}</td>
+                        <td style="padding: 12px;">{{ round($totals['fat'], 2) }}</td>
+                        <td style="padding: 12px;">{{ round($totals['fiber'], 2) }}</td>
+                        <td style="padding: 12px;">{{ round($totals['sugar'], 2) }}</td>
+                        <td style="padding: 12px;">{{ round($totals['sodium_mg'], 2) }}</td>
+                        <td style="padding: 12px;">{{ round($totals['carbon_footprint_gco2e'], 2) }}</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -243,6 +251,16 @@ document.addEventListener('DOMContentLoaded', function() {
         var colors = ['#36A2EB', '#FFCE56', '#FF6384'];
         var backgroundColors = [];
         var borderColors = [];
+        
+        // Check if there's any nutrient data
+        var hasNutrientData = totals.protein > 0 || totals.carbs > 0 || totals.fat > 0;
+        
+        if (!hasNutrientData) {
+            // Show empty state with grey circle
+            nutrientLabels.push('Empty');
+            nutrientData.push(100);
+            colors.push('#E8E8E8');
+        }
         
         for (var i = 0; i < nutrientLabels.length; i++) {
             backgroundColors.push(colors[i]);

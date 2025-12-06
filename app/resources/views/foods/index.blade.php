@@ -1,66 +1,70 @@
 @extends('layouts.app')
 
 @section('content')
-<div style="max-width: 980px; margin: 0 auto;">
-    <h1 style="margin-bottom: 12px;">Foods</h1>
+<div style="max-width: 980px; margin: 0 auto; padding: 0 20px;">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+        <h1 style="margin: 0;">Foods</h1>
+        <a href="{{ route('foods.create') }}" style="background-color: #4CAF50; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px;">+ New Food</a>
+    </div>
 
     @if(session('ok'))
-        <div style="background:#e6ffed; padding:10px; border:1px solid #b7eb8f; margin-bottom:12px;">
+        <div style="background: #d4edda; color: #155724; padding: 15px; margin-bottom: 20px; border: 1px solid #c3e6cb; border-radius: 5px;">
             {{ session('ok') }}
         </div>
     @endif
 
-    <div style="display:flex; gap:8px; align-items:center; margin-bottom:12px;">
-        <form method="get" action="{{ route('foods.index') }}" style="display:flex; gap:8px;">
-            <input type="text" name="q" value="{{ old('q', $q ?? request('q')) }}" placeholder="Search name..." />
-            <button type="submit">Search</button>
+    <div style="display: flex; gap: 8px; align-items: center; margin-bottom: 12px;">
+        <form method="get" action="{{ route('foods.index') }}" style="display: flex; gap: 8px;">
+            <input type="text" name="q" value="{{ old('q', $q ?? request('q')) }}" placeholder="Search name..." style="padding: 8px; border: 1px solid #ddd; border-radius: 4px;" />
+            <button type="submit" style="background-color: #007bff; color: white; padding: 8px 15px; border: none; border-radius: 4px; cursor: pointer;">Search</button>
         </form>
-        <a href="{{ route('foods.create') }}" style="margin-left:auto;">+ New Food</a>
     </div>
 
-    <table border="1" cellpadding="6" cellspacing="0" width="100%">
-        <thead>
-        <tr>
-            <th>Name</th>
-            <th>kcal/100g</th>
-            <th>Protein (g)</th>
-            <th>Carbs (g)</th>
-            <th>Fat (g)</th>
-            <th>Fiber (g)</th>
-            <th>Sugar (g)</th>
-            <th>Sodium (mg)</th>
-            <th>gCO2e/100g</th>
-            <th></th>
-        </tr>
-        </thead>
-        <tbody>
-        @forelse($foods as $f)
-            <tr>
-                <td>{{ $f->name }}</td>
-                <td>{{ $f->calories }}</td>
-                <td>{{ $f->protein }}</td>
-                <td>{{ $f->carbs }}</td>
-                <td>{{ $f->fat }}</td>
-                <td>{{ $f->fiber }}</td>
-                <td>{{ $f->sugar }}</td>
-                <td>{{ $f->sodium_mg }}</td>
-                <td>{{ $f->carbon_footprint_gco2e }}</td>
-                <td style="white-space:nowrap;">
-                    <a href="{{ route('foods.edit', $f) }}">Edit</a>
-                    <form method="post" action="{{ route('foods.destroy', $f) }}" style="display:inline;">
-                        @csrf
-                        @method('DELETE')
-                        <button type="submit" onclick="return confirm('Delete this food?')">Del</button>
-                    </form>
-                </td>
+    <div style="overflow-x: auto;">
+        <table style="width: 100%; border-collapse: collapse; background: white;">
+            <thead>
+            <tr style="background-color: #f8f9fa; border-bottom: 2px solid #dee2e6;">
+                <th style="padding: 12px; text-align: left;">Name</th>
+                <th style="padding: 12px; text-align: left;">kcal/100g</th>
+                <th style="padding: 12px; text-align: left;">Protein (g)</th>
+                <th style="padding: 12px; text-align: left;">Carbs (g)</th>
+                <th style="padding: 12px; text-align: left;">Fat (g)</th>
+                <th style="padding: 12px; text-align: left;">Fiber (g)</th>
+                <th style="padding: 12px; text-align: left;">Sugar (g)</th>
+                <th style="padding: 12px; text-align: left;">Sodium (mg)</th>
+                <th style="padding: 12px; text-align: left;">gCO2e/100g</th>
+                <th style="padding: 12px; text-align: center;">Actions</th>
             </tr>
-        @empty
-            <tr><td colspan="10">No foods yet.</td></tr>
-        @endforelse
-        </tbody>
-    </table>
+            </thead>
+            <tbody>
+            @forelse($foods as $f)
+                <tr style="border-bottom: 1px solid #dee2e6;">
+                    <td style="padding: 12px;">{{ $f->name }}</td>
+                    <td style="padding: 12px;">{{ $f->calories }}</td>
+                    <td style="padding: 12px;">{{ $f->protein }}</td>
+                    <td style="padding: 12px;">{{ $f->carbs }}</td>
+                    <td style="padding: 12px;">{{ $f->fat }}</td>
+                    <td style="padding: 12px;">{{ $f->fiber }}</td>
+                    <td style="padding: 12px;">{{ $f->sugar }}</td>
+                    <td style="padding: 12px;">{{ $f->sodium_mg }}</td>
+                    <td style="padding: 12px;">{{ $f->carbon_footprint_gco2e }}</td>
+                    <td style="padding: 12px; text-align: center; white-space: nowrap;">
+                        <a href="{{ route('foods.edit', $f) }}" style="display: inline-block; background-color: #007bff; color: white; padding: 6px 12px; text-decoration: none; border-radius: 4px; font-size: 13px; margin-right: 8px;">Edit</a>
+                        <form method="post" action="{{ route('foods.destroy', $f) }}" style="display: inline;" onsubmit="return confirm('Delete this food?');">
+                            @csrf
+                            @method('DELETE')
+                            <button type="submit" style="background-color: #dc3545; color: white; padding: 6px 12px; border: none; border-radius: 4px; cursor: pointer; font-size: 13px;">Delete</button>
+                        </form>
+                    </td>
+                </tr>
+            @empty
+                <tr><td colspan="10" style="padding: 12px; text-align: center; color: #999;">No foods yet.</td></tr>
+            @endforelse
+            </tbody>
+        </table>
+    </div>
 
-    <div style="margin-top:10px;">
+    <div style="margin-top: 10px;">
         @if(method_exists($foods, 'links') && $foods->hasPages())
             {{ $foods->appends(request()->query())->render('pagination') }}
         @endif
