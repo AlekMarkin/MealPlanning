@@ -35,9 +35,9 @@ class AuthController extends Controller
     public function register(Request $request)
     {
         $data = $request->validate([
-            'name'                  => ['required', 'string', 'max:255'],
-            'email'                 => ['required', 'email'],
-            'password'              => ['required', 'min:6', 'confirmed'],
+            'name'     => ['required', 'string', 'max:255'],
+            'email'    => ['required', 'email'],
+            'password' => ['required', 'min:6', 'confirmed'],
         ]);
 
         // Prevent duplicate emails
@@ -60,7 +60,7 @@ class AuthController extends Controller
         ]);
 
         return redirect()->route('home')->with('success', 'Account created!');
-    }
+    } // <-- This closing brace was missing
 
     public function logout(Request $request)
     {

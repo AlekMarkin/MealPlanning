@@ -22,7 +22,7 @@
     <div class="topbar">
         <div class="nav">
             {{-- Always visible --}}
-            <a href="{{ url('/') }}">Home</a>
+            <a href="{{ route('home') }}">Home</a>
             <a href="{{ route('foods.index') }}">Foods</a>
             <a href="{{ route('recipes.index') }}">Recipes</a>
 

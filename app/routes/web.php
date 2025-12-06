@@ -7,9 +7,14 @@ use App\Http\Controllers\GoalController;
 use App\Http\Controllers\FoodController;
 use App\Http\Controllers\RecipeController;
 use App\Http\Controllers\IntakeController;
+use App\Http\Controllers\UserMetricsController;
+use App\Http\Controllers\MealPlanController;
 
-// Home (guest + auth see the same landing page)
-Route::get('/', [HomeController::class, 'index'])->name('home');
+// Welcome landing page
+Route::get('/', function () { return view('welcome'); });
+
+// Home (guest + auth)
+Route::get('/home', [HomeController::class, 'index'])->name('home');
 
 // Show the same homepage for GET /login and /register so the links work
 Route::get('/login', [HomeController::class, 'index'])->name('login.form');
@@ -42,4 +47,20 @@ Route::post('/goals/store', [GoalController::class, 'store'])->name('goals.store
 Route::get('/goals/{id}/edit', [GoalController::class, 'edit'])->name('goals.edit');
 Route::post('/goals/{id}/update', [GoalController::class, 'update'])->name('goals.update');
 Route::post('/goals/{id}/delete', [GoalController::class, 'destroy'])->name('goals.destroy');
+
+//Biometrics
+Route::get('/user-metrics', [UserMetricsController::class, 'index'])->name('user-metrics.index');
+Route::get('/user-metrics/create', [UserMetricsController::class, 'create'])->name('user-metrics.create');
+Route::post('/user-metrics', [UserMetricsController::class, 'store'])->name('user-metrics.store');
+Route::get('/user-metrics/{id}/edit', [UserMetricsController::class, 'edit'])->name('user-metrics.edit');
+Route::post('/user-metrics/{id}', [UserMetricsController::class, 'update'])->name('user-metrics.update');
+Route::post('/user-metrics/{id}/delete', [UserMetricsController::class, 'destroy'])->name('user-metrics.destroy');
+
+//Meal Plans
+Route::get('/meal-plans', [MealPlanController::class, 'index'])->name('meal-plans.index');
+Route::get('/meal-plans/create', [MealPlanController::class, 'create'])->name('meal-plans.create');
+Route::post('/meal-plans', [MealPlanController::class, 'store'])->name('meal-plans.store');
+Route::get('/meal-plans/{id}/edit', [MealPlanController::class, 'edit'])->name('meal-plans.edit');
+Route::post('/meal-plans/{id}', [MealPlanController::class, 'update'])->name('meal-plans.update');
+Route::post('/meal-plans/{id}/delete', [MealPlanController::class, 'destroy'])->name('meal-plans.destroy');
 

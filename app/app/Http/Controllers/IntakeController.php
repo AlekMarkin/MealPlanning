@@ -14,7 +14,7 @@ class IntakeController extends Controller
     // list intakes for a given day + totals
     public function index(Request $request)
     {
-        // FIX: make sure userId is defined
+        // make sure userId is defined
         $userId = auth()->id() ?? session('user_id');
         if (!$userId) {
             return redirect('/')->with('error', 'Please sign in first.');
@@ -76,12 +76,25 @@ class IntakeController extends Controller
             }
         }
 
+        //load user's goals
+        $rawGoals = DB::table('goals')
+            ->select('metric', 'target_value')
+            ->where('user_id', $userId)
+            ->get();
+
+        $metricMeta = \App\Models\Goal::metrics();
+        $goals = [];
+        foreach ($rawGoals as $g) {
+            $goals[$g->metric] = (float) $g->target_value;
+        }
+
         return view('intakes.index', [
             'date'    => $date,
             'foods'   => $foods,
             'recipes' => $recipes,
             'intakes' => $intakes,
             'totals'  => $totals,
+            'goals'   => $goals,
         ]);
     }
 
@@ -95,15 +108,17 @@ class IntakeController extends Controller
             'food_id' => ['required','integer','exists:foods,id'],
             'grams'   => ['nullable','numeric','min:0'],
             'date'    => ['nullable','date'],
+            'time'    => ['nullable','date_format:H:i'],
         ]);
 
         $whenDate   = $data['date'] ?? now()->toDateString();
-        $consumedAt = $whenDate . ' 12:00:00';
+        $whenTime   = $data['time'] ?? '12:00';
+        $consumedAt = $whenDate . ' ' . $whenTime . ':00';
 
         Intake::create([
             'user_id'     => $userId,
             'intake_date' => $whenDate,
-            'consumed_at' => $consumedAt,            // ensure it’s set
+            'consumed_at' => $consumedAt,
             'food_id'     => (int) $data['food_id'],
             'recipe_id'   => null,
             'quantity_g'  => (int) ($data['grams'] ?? 100), // default 100g
@@ -123,15 +138,17 @@ class IntakeController extends Controller
             'recipe_id' => ['required','integer','exists:recipes,id'],
             'servings'  => ['nullable','numeric','min:0'],
             'date'      => ['nullable','date'],
+            'time'      => ['nullable','date_format:H:i'],
         ]);
 
         $whenDate   = $data['date'] ?? now()->toDateString();
-        $consumedAt = $whenDate . ' 12:00:00';
+        $whenTime   = $data['time'] ?? '12:00';
+        $consumedAt = $whenDate . ' ' . $whenTime . ':00';
 
         Intake::create([
             'user_id'     => $userId,
             'intake_date' => $whenDate,
-            'consumed_at' => $consumedAt,           // ensure it’s set
+            'consumed_at' => $consumedAt,
             'food_id'     => null,
             'recipe_id'   => (int) $data['recipe_id'],
             'quantity_g'  => 0,
@@ -141,7 +158,7 @@ class IntakeController extends Controller
         return back()->with('ok', 'Recipe added to daily intake.');
     }
 
-    // optional: delete an intake row
+    // delete an intake row
     public function destroy(Intake $intake)
     {
         $userId = auth()->id() ?? session('user_id');

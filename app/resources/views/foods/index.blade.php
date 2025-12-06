@@ -12,7 +12,7 @@
 
     <div style="display:flex; gap:8px; align-items:center; margin-bottom:12px;">
         <form method="get" action="{{ route('foods.index') }}" style="display:flex; gap:8px;">
-            <input type="text" name="q" value="{{ old('q', $q ?? request('q')) }}" placeholder="Search name…" />
+            <input type="text" name="q" value="{{ old('q', $q ?? request('q')) }}" placeholder="Search name..." />
             <button type="submit">Search</button>
         </form>
         <a href="{{ route('foods.create') }}" style="margin-left:auto;">+ New Food</a>
@@ -62,7 +62,7 @@
 
     <div style="margin-top:10px;">
         @if(method_exists($foods, 'links') && $foods->hasPages())
-            {{ $foods->appends(request()->query())->links() }}
+            {{ $foods->appends(request()->query())->render('pagination') }}
         @endif
     </div>
 </div>

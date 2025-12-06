@@ -44,6 +44,10 @@
                             <label>Password</label><br>
                             <input type="password" name="password" required style="width:100%;">
                         </div>
+                        <div style="margin-bottom:12px;">
+                            <label>Confirm Password</label><br>
+                            <input type="password" name="password_confirmation" required style="width:100%;">
+                        </div>
                         <button type="submit">Create account</button>
                     </form>
                 </div>
@@ -54,6 +58,17 @@
                     <ul style="margin:0; padding-left:18px;">
                         @foreach($errors->all() as $e)<li>{{ $e }}</li>@endforeach
                     </ul>
+                </div>
+            @endif
+
+            @if(session('error'))
+                <div style="background:#ffecec;border:1px solid #f5aca6;padding:8px;margin:16px auto; max-width:680px;">
+                    {{ session('error') }}
+                </div>
+            @endif
+            @if(session('success'))
+                <div style="background:#e6ffed;border:1px solid #b7eb8f;padding:8px;margin:16px auto; max-width:680px;">
+                    {{ session('success') }}
                 </div>
             @endif
         </div>
@@ -130,6 +145,17 @@
                             <li><strong>{{ $goals[$metric]['label'] ?? ucfirst($metric) }}:</strong> {{ $text }}</li>
                         @endforeach
                     </ul>
+                </div>
+            @endif
+
+            @if(session('error'))
+                <div style="background:#ffecec;border:1px solid #f5aca6;padding:8px;margin-top:16px;">
+                    {{ session('error') }}
+                </div>
+            @endif
+            @if(session('success'))
+                <div style="background:#e6ffed;border:1px solid #b7eb8f;padding:8px;margin-top:16px;">
+                    {{ session('success') }}
                 </div>
             @endif
         </div>
