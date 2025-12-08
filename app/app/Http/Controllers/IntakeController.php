@@ -9,12 +9,20 @@ use App\Models\Food;
 use App\Models\Recipe;
 use App\Models\RecipeItem;
 
+/*
+manages daily food and recipe intake tracking for users,
+handles recording of consumed foods and recipes with nutritional
+calculations based on quantity (grams) or servings
+*/
 class IntakeController extends Controller
 {
-    // list intakes for a given day + totals
+    /*
+    displays the daily intake log with nutritional totals and goal progress,
+    retrieves all intake entries for the specified date, calculates
+    cumulative nutritional values, and compares against user goals
+    */
     public function index(Request $request)
     {
-        // make sure userId is defined
         $userId = auth()->id() ?? session('user_id');
         if (!$userId) {
             return redirect('/')->with('error', 'Please sign in first.');
@@ -22,26 +30,34 @@ class IntakeController extends Controller
 
         $date = $request->query('date') ?: now()->toDateString();
 
-        // preload lists for the add-forms
-        $foods   = Food::where('user_id', $userId)->orderBy('name')->get();
-        $recipes = Recipe::where('user_id', $userId)->orderBy('name')->get();
+        //retrieves all foods and recipes for dropdown selection
+        $foods   = Food::orderBy('name')->get();
+        $recipes = Recipe::orderBy('name')->get();
 
-        // intakes of the day
+        //fetches user's intake entries for the selected date
         $intakes = Intake::where('user_id', $userId)
             ->whereDate('intake_date', $date)
             ->orderBy('created_at')
             ->get();
 
-        // compute totals (from foods per 100g and recipe items)
+        //initializes nutritional totals array
         $totals = [
-            'calories' => 0, 'protein' => 0, 'carbs' => 0, 'fat' => 0,
-            'fiber' => 0, 'sugar' => 0, 'sodium_mg' => 0, 'carbon_footprint_gco2e' => 0,
+            'calories' => 0, 
+            'protein' => 0, 
+            'carbs' => 0, 
+            'fat' => 0,
+            'fiber' => 0, 
+            'sugar' => 0, 
+            'sodium_mg' => 0, 
+            'carbon_footprint' => 0,
         ];
 
+        //calculates nutritional values based on intake entries
         foreach ($intakes as $in) {
             if ($in->food_id) {
                 $f = $foods->firstWhere('id', $in->food_id) ?: Food::find($in->food_id);
                 if ($f) {
+                    //scales nutritional values per 100g
                     $factor = ($in->quantity_g ?: 0) / 100;
                     $totals['calories'] += $f->calories * $factor;
                     $totals['protein']  += $f->protein * $factor;
@@ -50,18 +66,22 @@ class IntakeController extends Controller
                     $totals['fiber']    += $f->fiber * $factor;
                     $totals['sugar']    += $f->sugar * $factor;
                     $totals['sodium_mg'] += $f->sodium_mg * $factor;
-                    $totals['carbon_footprint_gco2e'] += $f->carbon_footprint_gco2e * $factor;
+                    $totals['carbon_footprint'] += $f->carbon_footprint_gco2e * $factor;
                 }
             } elseif ($in->recipe_id) {
                 $recipe = $recipes->firstWhere('id', $in->recipe_id) ?: Recipe::find($in->recipe_id);
                 if ($recipe) {
                     $items = RecipeItem::with('food')->where('recipe_id', $recipe->id)->get();
-                    // one "serving" is current sum of items (simple model)
-                    $servings = max(1.0, (float)($in->servings ?? 1));
+                    //intake.servings = how many servings the user ate
+                    //recipe.servings = how many servings the recipe makes in total
+                    $intakeServings = max(1.0, (float)($in->servings ?? 1));
+                    $recipeServings = max(1, (int)($recipe->servings ?? 1));
                     foreach ($items as $it) {
                         $f = $it->food;
                         if ($f) {
-                            $factor = ($it->quantity_g ?: 0) / 100 * $servings;
+                            //calculates nutrition: (ingredient nutrition) * (servings eaten) / (total servings in recipe)
+                            $grams = (float)($it->grams ?? 0);
+                            $factor = ($grams / 100) * ($intakeServings / $recipeServings);
                             $totals['calories'] += $f->calories * $factor;
                             $totals['protein']  += $f->protein * $factor;
                             $totals['carbs']    += $f->carbs * $factor;
@@ -69,20 +89,21 @@ class IntakeController extends Controller
                             $totals['fiber']    += $f->fiber * $factor;
                             $totals['sugar']    += $f->sugar * $factor;
                             $totals['sodium_mg'] += $f->sodium_mg * $factor;
-                            $totals['carbon_footprint_gco2e'] += $f->carbon_footprint_gco2e * $factor;
+                            $totals['carbon_footprint'] += $f->carbon_footprint_gco2e * $factor;
                         }
                     }
                 }
             }
         }
 
-        //load user's goals
+        //loads user's daily nutritional goals for progress comparison
         $rawGoals = DB::table('goals')
             ->select('metric', 'target_value')
             ->where('user_id', $userId)
+            ->where('period', 'daily')
             ->get();
 
-        $metricMeta = \App\Models\Goal::metrics();
+        //maps goal metrics to their target values
         $goals = [];
         foreach ($rawGoals as $g) {
             $goals[$g->metric] = (float) $g->target_value;
@@ -98,7 +119,10 @@ class IntakeController extends Controller
         ]);
     }
 
-    // add a single food (grams based)
+    /*
+    records a food intake entry with gram-based quantity,
+    creates an intake record linking the user, food, date, and consumption time
+    */
     public function storeFood(Request $request)
     {
         $userId = auth()->id() ?? session('user_id');
@@ -121,14 +145,17 @@ class IntakeController extends Controller
             'consumed_at' => $consumedAt,
             'food_id'     => (int) $data['food_id'],
             'recipe_id'   => null,
-            'quantity_g'  => (int) ($data['grams'] ?? 100), // default 100g
+            'quantity_g'  => (int) ($data['grams'] ?? 100),
             'servings'    => 0,
         ]);
 
         return back()->with('ok', 'Food added to daily intake.');
     }
 
-    // add a recipe (servings based)
+    /*
+    records a recipe intake entry with serving-based quantity,
+    creates an intake record linking the user, recipe, date, and consumption time
+    */
     public function storeRecipe(Request $request)
     {
         $userId = auth()->id() ?? session('user_id');
@@ -158,7 +185,10 @@ class IntakeController extends Controller
         return back()->with('ok', 'Recipe added to daily intake.');
     }
 
-    // delete an intake row
+    /*
+    deletes an intake entry after verifying user ownership,
+    ensures users can only delete their own intake records
+    */
     public function destroy(Intake $intake)
     {
         $userId = auth()->id() ?? session('user_id');

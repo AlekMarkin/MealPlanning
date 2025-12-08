@@ -4,16 +4,21 @@
 <div style="max-width: 960px; margin: 0 auto; padding: 20px; text-align: left;">
     <h1 style="margin-bottom: 20px; text-align: left;">Daily Intake</h1>
 
+    {{-- success message --}}
     @if(session('ok'))
         <div style="background-color: #d4edda; color: #155724; padding: 15px; margin-bottom: 20px; border: 1px solid #c3e6cb; border-radius: 5px;">
             {{ session('ok') }}
         </div>
     @endif
+
+    {{-- error message --}}
     @if(session('error'))
         <div style="background-color: #f8d7da; color: #721c24; padding: 15px; margin-bottom: 20px; border: 1px solid #f5c6cb; border-radius: 5px;">
             {{ session('error') }}
         </div>
     @endif
+
+    {{-- validation errors --}}
     @if($errors->any())
         <div style="background-color: #f8d7da; color: #721c24; padding: 15px; margin-bottom: 20px; border: 1px solid #f5c6cb; border-radius: 5px;">
             <ul style="margin: 0; padding-left: 18px;">
@@ -174,7 +179,7 @@
                         <td style="padding: 12px;">{{ round($totals['fiber'], 2) }}</td>
                         <td style="padding: 12px;">{{ round($totals['sugar'], 2) }}</td>
                         <td style="padding: 12px;">{{ round($totals['sodium_mg'], 2) }}</td>
-                        <td style="padding: 12px;">{{ round($totals['carbon_footprint_gco2e'], 2) }}</td>
+                        <td style="padding: 12px;">{{ round($totals['carbon_footprint'], 2) }}</td>
                     </tr>
                 </tbody>
             </table>
@@ -186,6 +191,7 @@
 <script>
 document.addEventListener('DOMContentLoaded', function() {
     try {
+        //daily totals from controller
         var totals = {
             calories: {{ $totals['calories'] ?? 0 }},
             protein: {{ $totals['protein'] ?? 0 }},
@@ -194,9 +200,10 @@ document.addEventListener('DOMContentLoaded', function() {
             fiber: {{ $totals['fiber'] ?? 0 }},
             sugar: {{ $totals['sugar'] ?? 0 }},
             sodium: {{ $totals['sodium_mg'] ?? 0 }},
-            carbon: {{ $totals['carbon_footprint_gco2e'] ?? 0 }}
+            carbon: {{ $totals['carbon_footprint'] ?? 0 }}
         };
 
+        //user's daily goals from controller
         var goals = {
             calories: {{ $goals['calories'] ?? 'null' }},
             protein: {{ $goals['protein'] ?? 'null' }},
@@ -205,7 +212,7 @@ document.addEventListener('DOMContentLoaded', function() {
             fiber: {{ $goals['fiber'] ?? 'null' }},
             sugar: {{ $goals['sugar'] ?? 'null' }},
             sodium: {{ $goals['sodium'] ?? 'null' }},
-            carbon: {{ $goals['carbon_footprint_gco2e'] ?? 'null' }}
+            carbon: {{ $goals['carbon_footprint'] ?? 'null' }}
         };
 
         var goalLabels = {
@@ -219,6 +226,7 @@ document.addEventListener('DOMContentLoaded', function() {
             carbon: 'Carbon'
         };
 
+        //creates progress bar data for a goal metric
         function createProgressBar(metric, consumed, goal) {
             if (!goal) return null;
             
@@ -252,11 +260,11 @@ document.addEventListener('DOMContentLoaded', function() {
         var backgroundColors = [];
         var borderColors = [];
         
-        // Check if there's any nutrient data
+        //checks if there's any nutrient data
         var hasNutrientData = totals.protein > 0 || totals.carbs > 0 || totals.fat > 0;
         
         if (!hasNutrientData) {
-            // Show empty state with grey circle
+            //shows empty state with grey circle
             nutrientLabels.push('Empty');
             nutrientData.push(100);
             colors.push('#E8E8E8');
@@ -300,6 +308,7 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
 
+        //carbon footprint doughnut chart
         var carbonCtx = document.getElementById('carbonChart').getContext('2d');
         var carbonGoal = goals.carbon || 1000;
 
@@ -339,6 +348,7 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
 
+        //generates goal progress indicator bars
         var indicatorsContainer = document.getElementById('goalIndicators');
         var hasAnyGoal = false;
 

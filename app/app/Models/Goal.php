@@ -4,12 +4,14 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
+//represents a user's nutritional goal with target values and periods
 class Goal extends Model
 {
     protected $fillable = [
         'user_id', 'metric', 'target_value', 'period',
     ];
 
+    //returns available metrics with labels and units
     public static function metrics(): array
     {
         return [
@@ -20,10 +22,11 @@ class Goal extends Model
             'fiber' => ['label' => 'Fiber', 'unit' => 'g'],
             'sugar' => ['label' => 'Sugar', 'unit' => 'g'],
             'sodium' => ['label' => 'Sodium', 'unit' => 'mg'],
-            'carbon_footprint_gco2e' => ['label' => 'Carbon Footprint', 'unit' => 'gCO2e'],
+            'carbon_footprint' => ['label' => 'Carbon Footprint', 'unit' => 'gCO2e'],
         ];
     }
 
+    //returns comparison operators for goal evaluation
     public static function comparators(): array
     {
         return [

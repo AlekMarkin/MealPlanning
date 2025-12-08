@@ -3,7 +3,7 @@
 @section('content')
 <div style="max-width: 900px; margin: 0 auto; text-align: center; padding: 40px 20px;">
     
-    <!-- Logo & Title -->
+    {{-- logo and title --}}
     <div style="margin-bottom: 30px; animation: fadeInDown 0.6s ease-out;">
         <h1 style="font-size: 48px; margin-bottom: 10px;">Meal Metrics</h1>
         <p style="font-size: 18px; color: #555; margin-bottom: 20px;">
@@ -11,10 +11,10 @@
         </p>
     </div>
 
-    <!-- Feature Cards -->
+    {{-- feature cards --}}
     <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; margin-bottom: 40px;" id="cardsContainer">
         
-        <!-- Card 1: Plan Meals -->
+        {{-- card 1: plan meals --}}
         <div class="feature-card" style="border: 1px solid #ddd; padding: 20px; text-align: left; background: #fafafa; cursor: pointer; transition: all 0.3s ease;">
             <div style="font-size: 40px; margin-bottom: 10px;">📅</div>
             <h3 style="margin-bottom: 10px; font-size: 20px;">Plan Meals</h3>
@@ -23,7 +23,7 @@
             </p>
         </div>
 
-        <!-- Card 2: Track Nutrition -->
+        {{-- card 2: track nutrition --}}
         <div class="feature-card" style="border: 1px solid #ddd; padding: 20px; text-align: left; background: #fafafa; cursor: pointer; transition: all 0.3s ease;">
             <div style="font-size: 40px; margin-bottom: 10px;">📊</div>
             <h3 style="margin-bottom: 10px; font-size: 20px;">Track Nutrition</h3>
@@ -32,7 +32,7 @@
             </p>
         </div>
 
-        <!-- Card 3: Set Goals -->
+        {{-- card 3: set goals --}}
         <div class="feature-card" style="border: 1px solid #ddd; padding: 20px; text-align: left; background: #fafafa; cursor: pointer; transition: all 0.3s ease;">
             <div style="font-size: 40px; margin-bottom: 10px;">🎯</div>
             <h3 style="margin-bottom: 10px; font-size: 20px;">Set Goals</h3>
@@ -41,7 +41,7 @@
             </p>
         </div>
 
-        <!-- Card 4: Manage Recipes -->
+        {{-- card 4: manage recipes --}}
         <div class="feature-card" style="border: 1px solid #ddd; padding: 20px; text-align: left; background: #fafafa; cursor: pointer; transition: all 0.3s ease;">
             <div style="font-size: 40px; margin-bottom: 10px;">🍽️</div>
             <h3 style="margin-bottom: 10px; font-size: 20px;">Create Recipes</h3>
@@ -50,7 +50,7 @@
             </p>
         </div>
 
-        <!-- Card 5: Track Health -->
+        {{-- card 5: track health --}}
         <div class="feature-card" style="border: 1px solid #ddd; padding: 20px; text-align: left; background: #fafafa; cursor: pointer; transition: all 0.3s ease;">
             <div style="font-size: 40px; margin-bottom: 10px;">❤️</div>
             <h3 style="margin-bottom: 10px; font-size: 20px;">Track Health</h3>
@@ -59,7 +59,7 @@
             </p>
         </div>
 
-        <!-- Card 6: Carbon Footprint -->
+        {{-- card 6: carbon footprint --}}
         <div class="feature-card" style="border: 1px solid #ddd; padding: 20px; text-align: left; background: #fafafa; cursor: pointer; transition: all 0.3s ease;">
             <div style="font-size: 40px; margin-bottom: 10px;">🌱</div>
             <h3 style="margin-bottom: 10px; font-size: 20px;">Carbon Footprint</h3>
@@ -70,7 +70,7 @@
 
     </div>
 
-    <!-- Call to Action -->
+    {{-- call to action --}}
     <div style="background: #f0f0f0; padding: 40px; border-radius: 8px; animation: fadeInUp 0.6s ease-out 0.2s backwards;">
         <h2 style="margin-bottom: 20px; font-size: 28px;">Ready to Get Started?</h2>
         <p style="color: #666; margin-bottom: 30px; font-size: 16px;">
@@ -136,7 +136,7 @@
 </style>
 
 <script>
-// Card hover effects
+//card hover effects
 document.querySelectorAll('.feature-card').forEach(card => {
     card.addEventListener('mouseenter', function() {
         this.style.transform = 'translateY(-5px)';
@@ -158,7 +158,7 @@ document.querySelectorAll('.feature-card').forEach(card => {
     });
 });
 
-// CTA button effects
+//cta button effects
 const ctaButton = document.getElementById('ctaButton');
 if (ctaButton) {
     ctaButton.addEventListener('mouseenter', function() {
@@ -181,7 +181,7 @@ if (ctaButton) {
     });
 }
 
-// Smooth scroll for anchor links
+//smooth scroll for anchor links
 document.addEventListener('DOMContentLoaded', function() {
     document.querySelectorAll('a[href^="#"]').forEach(anchor => {
         anchor.addEventListener('click', function (e) {
@@ -194,17 +194,7 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 });
 
-// Keyboard shortcuts: G to get started, Esc to scroll to top
-document.addEventListener('keydown', function(e) {
-    if ((e.key === 'g' || e.key === 'G') && ctaButton) {
-        ctaButton.click();
-    }
-    if (e.key === 'Escape') {
-        window.scrollTo({ top: 0, behavior: 'smooth' });
-    }
-});
-
-// Reset button state on page visibility change
+//resets button state on page visibility change
 document.addEventListener('visibilitychange', function() {
     if (!document.hidden && ctaButton) {
         ctaButton.style.backgroundColor = '#222';

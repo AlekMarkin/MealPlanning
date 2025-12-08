@@ -4,12 +4,14 @@
 <div style="max-width: 600px; margin: 0 auto; padding: 20px;">
     <h1 style="margin-bottom: 30px;">Add New Health Metric</h1>
 
+    {{-- error message --}}
     @if(session('error'))
         <div style="background-color: #f8d7da; color: #721c24; padding: 15px; margin-bottom: 20px; border: 1px solid #f5c6cb; border-radius: 5px;">
             {{ session('error') }}
         </div>
     @endif
 
+    {{-- validation errors --}}
     @if($errors->any())
         <div style="background-color: #f8d7da; color: #721c24; padding: 15px; margin-bottom: 20px; border: 1px solid #f5c6cb; border-radius: 5px;">
             <ul style="margin: 0; padding-left: 20px;">
@@ -20,9 +22,11 @@
         </div>
     @endif
 
+    {{-- metric creation form --}}
     <form action="{{ route('user-metrics.store') }}" method="POST" style="background: white; padding: 30px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
         @csrf
 
+        {{-- date input --}}
         <div style="margin-bottom: 20px;">
             <label for="recorded_date" style="display: block; margin-bottom: 5px; font-weight: bold;">Date</label>
             <input type="date" 
@@ -33,6 +37,7 @@
                    style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 4px; font-size: 16px;">
         </div>
 
+        {{-- weight input --}}
         <div style="margin-bottom: 20px;">
             <label for="weight_kg" style="display: block; margin-bottom: 5px; font-weight: bold;">Weight (kg)</label>
             <input type="number" 
@@ -48,6 +53,7 @@
             <small style="color: #666;">Enter your weight in kilograms</small>
         </div>
 
+        {{-- systolic blood pressure input --}}
         <div style="margin-bottom: 20px;">
             <label for="bp_systolic" style="display: block; margin-bottom: 5px; font-weight: bold;">Systolic Blood Pressure</label>
             <input type="number" 
@@ -62,6 +68,7 @@
             <small style="color: #666;">Upper number (e.g., 120)</small>
         </div>
 
+        {{-- diastolic blood pressure input --}}
         <div style="margin-bottom: 30px;">
             <label for="bp_diastolic" style="display: block; margin-bottom: 5px; font-weight: bold;">Diastolic Blood Pressure</label>
             <input type="number" 
@@ -76,6 +83,7 @@
             <small style="color: #666;">Lower number (e.g., 80)</small>
         </div>
 
+        {{-- form action buttons --}}
         <div style="display: flex; gap: 10px;">
             <button type="submit" style="flex: 1; background-color: #4CAF50; color: white; padding: 12px; border: none; border-radius: 5px; font-size: 16px; cursor: pointer;">
                 Save Metric

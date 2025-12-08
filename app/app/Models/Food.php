@@ -5,11 +5,12 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
+//represents a food item with nutritional data
 class Food extends Model
 {
     use HasFactory;
 
-    // IMPORTANT: match the actual DB table name
+    //specifies the database table name
     protected $table = 'foods';
 
     protected $fillable = [

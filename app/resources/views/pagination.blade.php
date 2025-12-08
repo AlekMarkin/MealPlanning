@@ -1,20 +1,20 @@
 @if ($paginator->hasPages())
     <div style="display: flex; gap: 4px; list-style: none; padding: 0; margin: 0;">
-        {{-- Previous Page Link --}}
+        {{-- previous page link --}}
         @if ($paginator->onFirstPage())
             <span style="padding: 4px 8px; font-size: 12px; color: #ccc;">← Prev</span>
         @else
             <a href="{{ $paginator->previousPageUrl() }}" style="padding: 4px 8px; font-size: 12px; text-decoration: none; color: #0066cc;">← Prev</a>
         @endif
 
-        {{-- Pagination Elements --}}
+        {{-- pagination elements --}}
         @foreach ($elements as $element)
-            {{-- "Three Dots" Separator --}}
+            {{-- three dots separator --}}
             @if (is_string($element))
                 <span style="padding: 4px 8px; font-size: 12px; color: #ccc;">{{ $element }}</span>
             @endif
 
-            {{-- Array Of Links --}}
+            {{-- array of links --}}
             @if (is_array($element))
                 @foreach ($element as $page => $url)
                     @if ($page == $paginator->currentPage())
@@ -26,7 +26,7 @@
             @endif
         @endforeach
 
-        {{-- Next Page Link --}}
+        {{-- next page link --}}
         @if ($paginator->hasMorePages())
             <a href="{{ $paginator->nextPageUrl() }}" style="padding: 4px 8px; font-size: 12px; text-decoration: none; color: #0066cc;">Next →</a>
         @else

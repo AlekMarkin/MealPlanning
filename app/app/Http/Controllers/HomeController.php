@@ -4,19 +4,28 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use App\Models\Goal; // for Goal::metrics()
+use App\Models\Goal;
 use Carbon\Carbon;
 
+/*
+handles the main landing page for both guest and authenticated users,
+displays authentication forms for guests and a nutritional dashboard
+with goal progress tracking for authenticated users
+*/
 class HomeController extends Controller
 {
+    /*
+    renders the home page based on authentication status,
+    for guests: displays login/registration forms,
+    for authenticated users: displays daily nutritional totals and goal progress
+    */
     public function index(Request $request)
     {
         $userId   = session('user_id');
         $userName = session('user_name');
 
-        // --- GUEST: show hero + auth forms (decide which form to auto-focus) ---
+        //handles guest view with login/register forms
         if (!$userId) {
-            // allow both routes (/login, /register) and query ?show=login|register
             $show = $request->input('show');
             if (!$show) {
                 if ($request->routeIs('login.form')) {
@@ -32,15 +41,17 @@ class HomeController extends Controller
             ]);
         }
 
-        // --- AUTH: compute today's totals and load user's goals ---
+        //handles authenticated user dashboard
         $today = Carbon::now()->toDateString();
 
-        // goals as [metric => ['target'=>float,'label'=>..., 'unit'=>...]]
+        //retrieves daily goals for the user
         $rawGoals = DB::table('goals')
             ->select('metric', 'target_value')
             ->where('user_id', $userId)
+            ->where('period', 'daily')
             ->get();
 
+        //maps goals with their metadata
         $metricMeta = Goal::metrics();
         $goals = [];
         foreach ($rawGoals as $g) {
@@ -52,15 +63,15 @@ class HomeController extends Controller
             ];
         }
 
-        // totals for today
+        //calculates today's nutritional totals
         $totals = $this->computeTodayTotals($userId, $today);
 
-        // simple advice: assume target is an upper limit
+        //generates advice based on goal progress
         $advice = [];
         foreach ($goals as $metric => $g) {
             $intake = (float) ($totals[$metric] ?? 0.0);
             $advice[$metric] = $intake <= $g['target']
-                ? 'Nice! You’re on track — the planet (and future you) will thank you.'
+                ? "Nice! You're on track - the planet (and future you) will thank you."
                 : 'A bit over your target. Tiny tweaks today can make a greener tomorrow.';
         }
 
@@ -73,9 +84,11 @@ class HomeController extends Controller
         ]);
     }
 
-    /**
-     * Aggregate today's totals over foods and recipes.
-     */
+    /*
+    calculates the total nutritional values for a user on a specific date,
+    aggregates values from both individual food entries and recipe servings,
+    scaling food nutrients per 100g and recipe nutrients per serving
+    */
     private function computeTodayTotals(int $userId, string $date): array
     {
         $totals = [
@@ -93,7 +106,7 @@ class HomeController extends Controller
             return $totals;
         }
 
-        // Map Food columns -> metric keys
+        //maps food database columns to metric keys
         $map = [
             'calories' => 'calories',
             'protein'  => 'protein',
@@ -106,7 +119,7 @@ class HomeController extends Controller
         ];
 
         foreach ($intakes as $row) {
-            // FOOD: scale per 100g
+            //processes individual food entries
             if (!is_null($row->food_id) && (int)$row->food_id > 0) {
                 $food = DB::table('foods')->where('id', $row->food_id)->first();
                 if ($food) {
@@ -117,20 +130,20 @@ class HomeController extends Controller
                 }
             }
 
-            // RECIPE: sum items once, then multiply by servings
+            //processes recipe entries with serving calculations
             if (!is_null($row->recipe_id) && (int)$row->recipe_id > 0) {
+                $recipe = DB::table('recipes')->where('id', $row->recipe_id)->first();
                 $items = DB::table('recipe_items')
                     ->where('recipe_id', $row->recipe_id)
                     ->get();
 
                 if ($items->count()) {
-                    $perServing = [
+                    $recipeTotal = [
                         'calories' => 0, 'protein' => 0, 'carbs' => 0, 'fat' => 0,
                         'fiber' => 0, 'sugar' => 0, 'sodium' => 0, 'carbon_footprint' => 0,
                     ];
 
                     foreach ($items as $it) {
-                        // tolerate either column name: quantity_g (new) or grams (old)
                         $qtyG = (float)($it->quantity_g ?? $it->grams ?? 0);
                         if ($qtyG <= 0) continue;
 
@@ -139,13 +152,15 @@ class HomeController extends Controller
 
                         $factor = $qtyG / 100.0;
                         foreach ($map as $foodCol => $key) {
-                            $perServing[$key] += $factor * (float)($food->{$foodCol} ?? 0);
+                            $recipeTotal[$key] += $factor * (float)($food->{$foodCol} ?? 0);
                         }
                     }
 
-                    $servings = max(0, (float)($row->servings ?? 0));
-                    foreach ($perServing as $key => $val) {
-                        $totals[$key] += $servings * $val;
+                    //calculates nutrition based on servings eaten vs total servings
+                    $intakeServings = max(1.0, (float)($row->servings ?? 1));
+                    $recipeServings = max(1, (int)($recipe->servings ?? 1));
+                    foreach ($recipeTotal as $key => $val) {
+                        $totals[$key] += $val * ($intakeServings / $recipeServings);
                     }
                 }
             }

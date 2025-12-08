@@ -4,12 +4,20 @@
 <div style="max-width: 980px; margin: 0 auto; padding: 0 20px;">
     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
         <h1 style="margin: 0;">Foods</h1>
-        <a href="{{ route('foods.create') }}" style="background-color: #4CAF50; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px;">+ New Food</a>
+        @if(session('user_id'))
+            <a href="{{ route('foods.create') }}" style="background-color: #4CAF50; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px;">+ New Food</a>
+        @endif
     </div>
 
     @if(session('ok'))
         <div style="background: #d4edda; color: #155724; padding: 15px; margin-bottom: 20px; border: 1px solid #c3e6cb; border-radius: 5px;">
             {{ session('ok') }}
+        </div>
+    @endif
+
+    @if(session('error'))
+        <div style="background: #f8d7da; color: #721c24; padding: 15px; margin-bottom: 20px; border: 1px solid #f5c6cb; border-radius: 5px;">
+            {{ session('error') }}
         </div>
     @endif
 
@@ -49,12 +57,16 @@
                     <td style="padding: 12px;">{{ $f->sodium_mg }}</td>
                     <td style="padding: 12px;">{{ $f->carbon_footprint_gco2e }}</td>
                     <td style="padding: 12px; text-align: center; white-space: nowrap;">
-                        <a href="{{ route('foods.edit', $f) }}" style="display: inline-block; background-color: #007bff; color: white; padding: 6px 12px; text-decoration: none; border-radius: 4px; font-size: 13px; margin-right: 8px;">Edit</a>
-                        <form method="post" action="{{ route('foods.destroy', $f) }}" style="display: inline;" onsubmit="return confirm('Delete this food?');">
-                            @csrf
-                            @method('DELETE')
-                            <button type="submit" style="background-color: #dc3545; color: white; padding: 6px 12px; border: none; border-radius: 4px; cursor: pointer; font-size: 13px;">Delete</button>
-                        </form>
+                        @if(session('user_id'))
+                            <a href="{{ route('foods.edit', $f) }}" style="display: inline-block; background-color: #007bff; color: white; padding: 6px 12px; text-decoration: none; border-radius: 4px; font-size: 13px; margin-right: 8px;">Edit</a>
+                            <form method="post" action="{{ route('foods.destroy', $f) }}" style="display: inline;" onsubmit="return confirm('Delete this food?');">
+                                @csrf
+                                @method('DELETE')
+                                <button type="submit" style="background-color: #dc3545; color: white; padding: 6px 12px; border: none; border-radius: 4px; cursor: pointer; font-size: 13px;">Delete</button>
+                            </form>
+                        @else
+                            <span style="color: #999;">-</span>
+                        @endif
                     </td>
                 </tr>
             @empty

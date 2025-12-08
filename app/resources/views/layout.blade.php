@@ -14,7 +14,7 @@
             text-align: center;
             padding: 20px;
         }
-        /* top-right  area */
+        /* top-right area */
         .nav {
             position: fixed;
             top: 10px;

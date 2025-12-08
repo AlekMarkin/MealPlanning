@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
+//represents a user's food or recipe consumption record
 class Intake extends Model
 {
     protected $fillable = [
